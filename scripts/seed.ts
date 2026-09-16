@@ -3,7 +3,8 @@ import { openDatabase } from '../src/db/database.ts';
 import { pathToFileURL } from 'node:url';
 import type { DatabaseSync } from 'node:sqlite';
 export function seed(db: DatabaseSync): boolean {
-  if ((db.prepare('SELECT count(*) AS n FROM events').get() as { n: number }).n) return false;
+  // Completa a base demonstrativa se ela ainda não atingiu o recorte esperado.
+  if ((db.prepare('SELECT count(*) AS n FROM events').get() as { n: number }).n >= 37) return false;
   db.exec('BEGIN');
   try {
     for (let p = 1; p <= 6; p++) {
