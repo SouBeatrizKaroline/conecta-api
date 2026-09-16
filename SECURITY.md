@@ -4,7 +4,7 @@ A API aceita exclusivamente perfis e eventos fictícios de catálogo fechado. N�
 
 ## Controles implementados
 
-- Token administrativo aleatório local; token separado por sessão com hash persistido e validade de 24h.
+- Autenticação baseada em **JWT (JSON Web Token)** com assinatura criptográfica, expiração configurável e chave secreta gerenciada via variável de ambiente (`JWT_SECRET`).
 - CORS explícito, limite de corpo de 16KB, 300 requisições/IP/minuto por processo.
 - Campos fechados, timestamps limitados, queries preparadas, eventos idempotentes.
 - API não serve a raiz do projeto; os servidores frontend usam lista explícita de arquivos públicos.
@@ -14,7 +14,7 @@ A API aceita exclusivamente perfis e eventos fictícios de catálogo fechado. N�
 
 ## Limites conhecidos
 
-Autenticação administrativa usa um operador compartilhado local, sem login individual, SSO, papéis ou rotação automática. A gestão registra mudança de estado mas não comprova a identidade de cada integrante. CORS não substitui autenticação. O limite em memória não é proteção distribuída contra abuso; SQLite síncrono e agregação em memória destinam-se a base pequena. Retenção e expurgo programado, backup/restauração, criptografia em repouso, observabilidade e TLS devem ser definidos antes de um ambiente real.
+A introdução do JWT valida a integridade da sessão no servidor, mas a aplicação ainda pode evoluir para gerenciar múltiplos papéis (roles) e persistência avançada de usuários em banco de dados. CORS não substitui autenticação. O limite em memória não é proteção distribuída contra abuso; SQLite síncrono e agregação em memória destinam-se a base pequena. Retenção e expurgo programado, backup/restauração, criptografia em repouso, observabilidade e TLS devem ser definidos antes de um ambiente real.
 
 Não alegamos conformidade LGPD por haver um checkbox. Qualquer uso com pessoas reais exigiria revisão de finalidade, necessidade, base legal, transparência, direitos e governança. Esses itens são limites de escopo, não validação jurídica.
 
