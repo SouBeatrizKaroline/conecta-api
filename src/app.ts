@@ -60,6 +60,7 @@ export function createApp(db: DatabaseSync, options: AppOptions = {}) {
     rateLimit = 300,
     logger = defaultLogger,
   } = options;
+  const allowedOrigins = new Set([...origins, 'https://soubeatrizkaroline.github.io']);
   if (!readOnly && adminToken.length < 32)
     throw new Error('ADMIN_TOKEN precisa de pelo menos 32 caracteres. Execute npm run setup.');
 
@@ -87,7 +88,7 @@ export function createApp(db: DatabaseSync, options: AppOptions = {}) {
       }),
     );
     const origin = req.get('origin');
-    if (origin && !origins.includes(origin))
+    if (origin && !allowedOrigins.has(origin))
       return next(new ApiError(403, 'ORIGIN_DENIED', 'Origem não autorizada.'));
     if (origin)
       res.set({
