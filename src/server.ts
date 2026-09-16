@@ -11,7 +11,8 @@ const app = createApp(db, {
     'http://localhost:8080,http://127.0.0.1:8080,http://localhost:8081,http://127.0.0.1:8081'
   ).split(','),
 });
-const host = process.env.HOST ?? '127.0.0.1',
+// Render and outros provedores precisam que o servidor escute em todas as interfaces.
+const host = process.env.HOST ?? '0.0.0.0',
   port = Number(process.env.PORT ?? 3000);
 const server = app.listen(port, host, () =>
   console.log(`Conecta API: http://${host}:${port} | dados simulados`),
