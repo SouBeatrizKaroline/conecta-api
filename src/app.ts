@@ -117,6 +117,8 @@ export function createApp(db: DatabaseSync, options: AppOptions = {}) {
     readOnly
       ? next(new ApiError(403, 'READ_ONLY', 'Demonstração pública somente para leitura.'))
       : next();
+  // A coleta consentida continua disponível no modo público para o App gerar a jornada.
+  const capture = (_req: Request, _res: Response, next: NextFunction) => next();
 
   const administrative = (req: Request, _res: Response, next: NextFunction) => {
     if (readOnly && req.method === 'GET') return next();
@@ -167,6 +169,7 @@ export function createApp(db: DatabaseSync, options: AppOptions = {}) {
         users: true,
         campaigns: true,
         responseEnvelope: true,
+        sessionCapture: true,
       },
     });
   });
@@ -204,7 +207,7 @@ export function createApp(db: DatabaseSync, options: AppOptions = {}) {
     return ok(res, { loggedOut: true }, 'Sessão encerrada.');
   });
 
-  app.post('/api/v1/sessions', writable, (req, res) => {
+  app.post('/api/v1/sessions', capture, (req, res) => {
     object(req.body, ['profileId', 'analyticsConsent']);
     requireValue(
       typeof req.body.profileId === 'string' &&
@@ -244,7 +247,7 @@ export function createApp(db: DatabaseSync, options: AppOptions = {}) {
     });
   });
 
-  app.patch('/api/v1/sessions/:id/preferences', writable, session, (req, res) => {
+  app.patch('/api/v1/sessions/:id/preferences', capture, session, (req, res) => {
     object(req.body, ['analyticsConsent']);
     requireValue(typeof req.body.analyticsConsent === 'boolean', 'analyticsConsent deve ser booleano.');
     db.exec('BEGIN');
@@ -259,7 +262,7 @@ export function createApp(db: DatabaseSync, options: AppOptions = {}) {
     return ok(res, { analyticsConsent: req.body.analyticsConsent, eventsRemoved: !req.body.analyticsConsent }, 'Preferência atualizada.');
   });
 
-  app.post('/api/v1/sessions/:id/events', writable, session, (req, res) => {
+  app.post('/api/v1/sessions/:id/events', capture, session, (req, res) => {
     if (!req.session!.consent)
       throw new ApiError(403, 'CONSENT_REQUIRED', 'Coleta desativada nesta sessão.');
     const event = validateEvent(req.body);

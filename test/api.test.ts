@@ -328,7 +328,7 @@ test('base simulada, filtros, regras e gestão persistente com auditoria', async
     1,
   );
 });
-test('modo público permite leitura e proíbe toda mutação', async (t) => {
+test('modo público permite captura consentida e proíbe mutações administrativas', async (t) => {
   const { call, db } = await fixture(t, { readOnly: true });
   seed(db);
   assert.deepEqual((await call('/health')).data.capabilities, {
@@ -337,6 +337,7 @@ test('modo público permite leitura e proíbe toda mutação', async (t) => {
     users: true,
     campaigns: true,
     responseEnvelope: true,
+    sessionCapture: true,
   });
   assert.equal((await call('/api/v1/admin/summary')).status, 200);
   assert.equal(
@@ -346,7 +347,7 @@ test('modo público permite leitura e proíbe toda mutação', async (t) => {
         body: { profileId: 'demo-01', analyticsConsent: true },
       })
     ).status,
-    403,
+    201,
   );
   assert.equal(
     (
