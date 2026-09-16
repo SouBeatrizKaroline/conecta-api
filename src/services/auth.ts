@@ -18,10 +18,20 @@ export function verifyPassword(password: string, stored: string): boolean {
   return actual.length === target.length && timingSafeEqual(actual, target);
 }
 
-export function createUser(db: DatabaseSync, input: { name: string; email: string; password: string; role: UserRole }) {
+export function createUser(
+  db: DatabaseSync,
+  input: { name: string; email: string; password: string; role: UserRole },
+) {
   const id = randomUUID();
   const createdAt = new Date().toISOString();
-  db.prepare('INSERT INTO users VALUES (?, ?, ?, ?, ?, ?)').run(id, input.name, input.email, hashPassword(input.password), input.role, createdAt);
+  db.prepare('INSERT INTO users VALUES (?, ?, ?, ?, ?, ?)').run(
+    id,
+    input.name,
+    input.email,
+    hashPassword(input.password),
+    input.role,
+    createdAt,
+  );
   return { id, name: input.name, email: input.email, role: input.role, createdAt };
 }
 
