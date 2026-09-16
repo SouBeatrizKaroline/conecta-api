@@ -8,7 +8,7 @@ const app = createApp(db, {
   adminToken: process.env.ADMIN_TOKEN ?? '',
   origins: (
     process.env.ALLOWED_ORIGINS ??
-    'http://localhost:8080,http://127.0.0.1:8080,http://localhost:8081,http://127.0.0.1:8081'
+    'http://localhost:8080,http://127.0.0.1:8080,http://localhost:8081,http://127.0.0.1:8081,https://soubeatrizkaroline.github.io'
   ).split(','),
 });
 // Render and outros provedores precisam que o servidor escute em todas as interfaces.
