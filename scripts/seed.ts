@@ -1,8 +1,9 @@
 import { randomUUID, createHash } from 'node:crypto';
-import { openDatabase } from '../src/db/database.js';
+import { openDatabase } from '../src/db/database.ts';
 import { pathToFileURL } from 'node:url';
-export function seed(db) {
-  if (db.prepare('SELECT count(*) AS n FROM events').get().n) return false;
+import type { DatabaseSync } from 'node:sqlite';
+export function seed(db: DatabaseSync): boolean {
+  if ((db.prepare('SELECT count(*) AS n FROM events').get() as { n: number }).n) return false;
   db.exec('BEGIN');
   try {
     for (let p = 1; p <= 6; p++) {
@@ -16,7 +17,7 @@ export function seed(db) {
           new Date(time).toISOString(),
           new Date(time + 3600_000).toISOString(),
         );
-        const steps = [
+        const steps: Array<[string, string, string]> = [
           ['page_view', 'home', 'page'],
           ['click', 'oportunidades', 'explorar'],
           ['page_view', 'oportunidades', 'page'],

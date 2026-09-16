@@ -24,7 +24,7 @@ A base de Ines utiliza Express e MariaDB. Preservamos o conceito de acesso, cliq
 ```mermaid
 sequenceDiagram
   actor Pessoa as Pessoa na demonstração
-  participant App as App / demo.html
+  participant App as App / home.html e oportunidades.html
   participant API as API v1
   participant DB as SQLite
   participant BI as Analytics
@@ -48,10 +48,10 @@ sequenceDiagram
 
 ## Organização da API
 
-- **src/app.js:** rotas, fronteiras HTTP, autorização e limites.
-- **src/validation.js:** contrato de entrada, enums e filtros.
+- **src/app.ts:** rotas, fronteiras HTTP, autorização e limites.
+- **src/validation.ts:** contrato de entrada, enums e filtros.
 - **src/services/analytics.js:** métricas, jornadas, sinais e CSV.
-- **src/db/database.js / schema.sql:** criação do banco e catálogo fictício.
+- **src/db/database.ts / schema.sql:** criação do banco e catálogo fictício.
 - **scripts/:** configuração local e carga simulada idempotente.
 - **test/:** contratos, segurança, persistência e fluxo funcional.
 

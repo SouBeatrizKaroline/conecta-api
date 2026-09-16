@@ -2,9 +2,9 @@
 import assert from 'node:assert/strict';
 import { pathToFileURL } from 'node:url';
 import { resolve } from 'node:path';
-import { openDatabase } from '../src/db/database.js';
-import { createApp } from '../src/app.js';
-import { seed } from './seed.js';
+import { openDatabase } from '../src/db/database.ts';
+import { createApp } from '../src/app.ts';
+import { seed } from './seed.ts';
 
 const appPath = resolve(process.env.CONECTA_APP_PATH ?? '../conecta-app');
 const analyticsPath = resolve(process.env.CONECTA_ANALYTICS_PATH ?? '../conecta-analytics');

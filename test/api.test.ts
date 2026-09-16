@@ -4,11 +4,11 @@ import { randomUUID } from 'node:crypto';
 import { mkdtempSync, rmSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
-import { openDatabase } from '../src/db/database.js';
-import { createApp } from '../src/app.js';
-import { seed } from '../scripts/seed.js';
-import { csv } from '../src/services/analytics.js';
-import { historicalSignals } from '../src/services/insights.js';
+import { openDatabase } from '../src/db/database.ts';
+import { createApp } from '../src/app.ts';
+import { seed } from '../scripts/seed.ts';
+import { csv } from '../src/services/analytics.ts';
+import { historicalSignals } from '../src/services/insights.ts';
 const token = 'test-only-token-with-more-than-thirty-two-characters';
 
 test('contexto explica preferência, ajuda e conclusão sem cruzar sessões', async (t) => {
@@ -334,6 +334,9 @@ test('modo público permite leitura e proíbe toda mutação', async (t) => {
   assert.deepEqual((await call('/health')).data.capabilities, {
     historicalSignals: true,
     sessionRecommendations: true,
+    users: true,
+    campaigns: true,
+    responseEnvelope: true,
   });
   assert.equal((await call('/api/v1/admin/summary')).status, 200);
   assert.equal(

@@ -1,125 +1,111 @@
 # Conecta API
 
-## Integração com o Analytics
+Backend do CONECTA para o Hackathon Conexão Ancestral, Petronect + KODIE Academy. A API é a fonte de verdade dos três repositórios: recebe eventos do App, valida e persiste dados fictícios, processa jornadas, expõe métricas para o Analytics e registra campanhas/recomendações sem disparo automático.
 
-A saúde da API anuncia suporte a sinais históricos e recomendações em `capabilities`. O Analytics atualizado verifica essa compatibilidade antes de carregar. Execute `node scripts/check-integration.js` com os três repositórios em pastas irmãs para validar o fluxo usando o cliente original do App, sem modificá-lo. Veja [o guia integrado](docs/INTEGRATION.md).
+API publicada no Render: https://conecta-api-2x27.onrender.com
 
-## Evolução de jornadas e próximos passos
+> Protótipo funcional com dados simulados. Não há integração com o Portal Petronect real, CRM, envio de mensagens ou dados pessoais reais.
 
-O contexto da sessão agora recomenda um próximo passo com regra e motivo, a partir de preferência explícita, exploração, ajuda ou conclusão. A nova consulta `/api/v2/admin/signals` avalia sinais na data histórica escolhida e informa se continuam ativos hoje. A consulta v1 foi preservada para o painel existente.
+## Arquitetura
 
-Leia [a evolução do backend](docs/EVOLUTION.md) para exemplos, integração dos novos campos e proposta de arquitetura Node.js serverless em AWS ou Azure. A implantação em nuvem continua planejada; a execução implementada usa Express e SQLite local.
+```mermaid
+flowchart LR
+  APP[Conecta App] -->|sessões e eventos consentidos| API[Conecta API /api/v1]
+  API --> DB[(SQLite)]
+  API -->|contexto da sessão| APP
+  ANA[Conecta Analytics] -->|métricas, jornadas, sinais| API
+  ANA -->|ações e campanhas em rascunho| API
+```
 
-### Acessos organizados. Jornadas compreensíveis. Ações explicáveis.
-
-Backend do Conecta para o Hackathon Conexão Ancestral, **Petronect + KODIE Academy**. Evolui os conceitos da base de Ines para uma API de eventos versionada, com persistência local, regras de jornada, exportação e gestão de ações.
-
-> **Protótipo funcional, dados fictícios.** Não se conecta ao Portal Petronect, não identifica pessoas reais e não dispara campanhas. API em Express, Node.js 24 e SQLite. MariaDB foi substituído no protótipo local; a migração e seus limites estão documentados.
-
-**Explore:** [Arquitetura](docs/ARCHITECTURE.md) · [Contrato da API](docs/API.md) · [Dados e métricas](docs/DATA-MODEL.md) · [Execução integrada](docs/INTEGRATION.md) · [Produto e identidade](docs/PRODUCT.md) · [Roadmap](docs/ROADMAP.md) · [Contribuição](CONTRIBUTING.md) · [Segurança](SECURITY.md) · [Verificação](docs/VERIFICATION.md)
-
-## Executar em poucos passos
+## Executar localmente
 
 ```sh
 npm ci
 npm run setup
 npm run seed
+npm run check
 npm test
 npm start
 ```
 
-Saúde: **http://127.0.0.1:3000/health**. setup cria .env local com token administrativo aleatório e escrita habilitada; não sobrescreve arquivo existente. seed cria **37 eventos de 6 perfis fictícios em 9 sessões**, sem sobrescrever uma base que já possui eventos. Consulte ADMIN_TOKEN no .env para conectar o Analytics. Guia completo: [executar os três sistemas](docs/INTEGRATION.md).
+Saúde local: http://127.0.0.1:3000/health
 
-Sem .env, o padrão é leitura pública dos dados fictícios e gravação bloqueada. Não há hospedagem da API provisionada nesta entrega.
+Swagger/OpenAPI: http://127.0.0.1:3000/api-docs
 
-## O desafio e a nossa resposta
+O `setup` cria `.env` com `ADMIN_TOKEN`, `DEMO_ADMIN_EMAIL` e `DEMO_ADMIN_PASSWORD`. O `seed` cria uma base fictícia com 37 eventos, 6 perfis e 9 sessões quando o banco ainda está vazio.
 
-O **Hackathon Conexão Ancestral**, da **Petronect**, com execução da **KODIE Academy**, propõe identificar os acessos ao Portal Petronect e usar esse conhecimento para apoiar o reengajamento de usuários. O material de abertura descreve uma lacuna entre contar cliques e compreender quem acessa, qual é o primeiro clique e com que frequência retorna.
+## Respostas padronizadas
 
-O **Conecta** organiza esse problema em um ciclo demonstrável: **acesso → evento → jornada → sinal → próxima ação**. A proposta atende fornecedores e clientes na experiência de navegação e apoia Marketing e Atendimento na interpretação dos acessos.
+Sucesso:
 
-**Todos os dados da nova API e do Analytics são fictícios. Não existe integração com o Portal Petronect.** As recomendações são regras transparentes para revisão humana, sem modelos preditivos, envio de campanhas ou promessa de aumento de conversão.
-
-Fonte do escopo: material enviado pela equipe, _Slides_Abertura_Hackathon_Conexao_Ancestral.pdf_, páginas 2, 8, 9, 11 e 12, abertura de 14/09/2026. As páginas 8 e 9 sustentam o problema e o uso obrigatório de base simulada/protótipo demonstrável. O PDF original não é redistribuído aqui.
-
-## Os três repositórios
-
-| Repositório                                                                  | Responsabilidade                                                  | Execução local                  |
-| ---------------------------------------------------------------------------- | ----------------------------------------------------------------- | ------------------------------- |
-| [conecta-app](https://github.com/SouBeatrizKaroline/conecta-app)             | Frontend preservado e coleta consentida de eventos demonstrativos | http://127.0.0.1:8080/home.html |
-| [conecta-api](https://github.com/SouBeatrizKaroline/conecta-api)             | Coleta, armazenamento, processamento, API e exportação            | http://127.0.0.1:3000/health    |
-| [conecta-analytics](https://github.com/SouBeatrizKaroline/conecta-analytics) | Visão gerencial, jornadas, sinais e gestão de ações               | http://127.0.0.1:8081           |
-
-```mermaid
-flowchart LR
-  U[Usuário demonstrativo] --> F[Conecta App]
-  F -->|Sessão e eventos autorizados| API[Conecta API v1]
-  API -->|Contexto mínimo da própria sessão| F
-  API --> DB[(SQLite: eventos e ações)]
-  DB --> R[Regras de jornada na API]
-  R --> API
-  A[Conecta Analytics] -->|Consulta agregados e jornadas| API
-  API -->|Dados processados e CSV| A
-  G[Marketing e Atendimento] --> A
-  A -->|Atualiza estado de uma ação| API
+```json
+{ "success": true, "message": "", "data": {} }
 ```
 
-O Analytics consulta a API por HTTP e atualiza sob demanda. Não há conexão direta dos frontends ao banco, WebSocket ou envio automático do backend ao painel.
+Erro:
 
-## Entregas implementadas
-
-- Sessões fictícias com tokens próprios e contexto mínimo para o App.
-- Eventos de acesso, clique, interesse e conclusão, com validação e idempotência.
-- Armazenamento SQLite, índices, relações e transações.
-- Métricas de acesso, primeiro clique, retorno, timeline e regras explicáveis.
-- Filtros por período e segmento; paginação de jornadas e sinais.
-- CSV sem dados cadastrais, filtrado e limitado a 10.000 eventos.
-- Gestão de ações e histórico de alteração, sem envio de comunicação.
-- Autorização administrativa, CORS explícito, limite de requisições e retirada da coleta.
-
-## Estrutura
-
-```text
-├── src/
-│   ├── server.js                    # Inicialização e encerramento
-│   ├── app.js                       # Rotas HTTP e autorização
-│   ├── validation.js                # Contrato e filtros
-│   ├── services/analytics.js        # Métricas, jornadas, sinais e CSV
-│   └── db/{database.js,schema.sql}  # Persistência e catálogo fictício
-├── scripts/{setup.js,seed.js}       # Ambiente local e dados simulados
-├── test/api.test.js                 # Testes HTTP e persistência
-├── docs/                            # OpenAPI, arquitetura e operação
-├── .env.example                     # Variáveis, sem segredo
-└── .github/                         # CI e modelo de PR
+```json
+{ "success": false, "message": "", "errors": [] }
 ```
 
-## Configuração
+Campos legados importantes também permanecem no topo da resposta para manter compatibilidade com clientes já existentes.
 
-| Variável        | Padrão / finalidade                                  |
-| --------------- | ---------------------------------------------------- |
-| HOST            | 127.0.0.1; loopback local                            |
-| PORT            | 3000                                                 |
-| DB_PATH         | ./data/conecta.sqlite; arquivo não versionado        |
-| DEMO_READ_ONLY  | true; false apenas no ambiente local de escrita      |
-| ADMIN_TOKEN     | Pelo menos 32 caracteres; gerado por setup           |
-| ALLOWED_ORIGINS | Origens locais 8080/8081; lista separada por vírgula |
+## Endpoints
 
-## Limites técnicos
+| Grupo | Endpoints |
+| --- | --- |
+| Saúde e documentação | `GET /health`, `GET /api-docs`, `GET /api-docs/openapi.json` |
+| Autenticação | `POST /api/v1/auth/login`, `GET /api/v1/auth/me`, `POST /api/v1/auth/logout` |
+| App/Jornada | `GET /api/v1/catalog`, `POST /api/v1/sessions`, `GET /api/v1/sessions/:id/context`, `PATCH /api/v1/sessions/:id/preferences`, `POST /api/v1/sessions/:id/events` |
+| Analytics | `GET /api/v1/admin/summary`, `GET /api/v1/admin/dashboard`, `GET /api/v1/admin/journeys`, `GET /api/v1/admin/signals`, `GET /api/v2/admin/signals`, `GET /api/v1/admin/recommendations` |
+| Gestão | `PATCH /api/v1/admin/signals/:id`, `GET /api/v1/admin/audit`, `GET/POST /api/v1/admin/users`, `GET/POST/PATCH /api/v1/admin/campaigns` |
+| Relatórios | `GET /api/v1/admin/events.csv`, `GET /api/v1/admin/reports/events.csv` |
 
-Uma instância, base pequena e processamento síncrono em memória. Não há usuários reais, SSO, filas, machine learning, envio de mensagens ou migração automática do banco anterior. Confira o [modelo de dados](docs/DATA-MODEL.md) antes de interpretar os indicadores e [SECURITY](SECURITY.md) antes de hospedar.
+## Recursos implementados
 
-## Equipe 05
+- TypeScript com contratos explícitos, DTOs e validação de entrada.
+- Tratamento global de erros, logs estruturados, CORS, rate limit, health check e versionamento `/api/v1`.
+- Autenticação administrativa por `ADMIN_TOKEN` ou login com sessão.
+- Sessões demonstrativas, consentimento, retirada da coleta e eventos idempotentes.
+- Métricas, jornadas, sinais históricos v2, auditoria e CSV seguro.
+- Usuários administrativos e campanhas em rascunho vinculadas a sinais.
+- Banco SQLite com relações entre perfis, sessões, eventos, ações, auditoria, usuários, campanhas e sinais.
 
-| Integrante                         |
-| ---------------------------------- |
-| Ines Correa Gomes Cardinot         |
-| Beatriz Karoline Cordeiro da Silva |
-| Kesly Aquinoã Ferreira da Silva    |
-| Milene Arnaldo Ribeiro Belotto     |
-| Ana Carolina Pereira Ruas          |
+## Variáveis
 
-Os papéis individuais devem ser definidos pela equipe. Esta documentação não atribui funções ou resultados de seleção não confirmados.
+| Variável | Finalidade |
+| --- | --- |
+| `HOST` | Host HTTP. Padrão local: `127.0.0.1` |
+| `PORT` | Porta HTTP. Padrão: `3000` |
+| `DB_PATH` | Caminho do SQLite |
+| `DEMO_READ_ONLY` | `true` bloqueia mutações e libera GET administrativos públicos |
+| `ADMIN_TOKEN` | Token administrativo com pelo menos 32 caracteres |
+| `DEMO_ADMIN_EMAIL` | E-mail do login administrativo demo |
+| `DEMO_ADMIN_PASSWORD` | Senha do login administrativo demo |
+| `ALLOWED_ORIGINS` | Origens permitidas para App e Analytics |
 
-## Desenvolvimento e licença
+## Render
 
-Leia [CONTRIBUTING](CONTRIBUTING.md) para branches, Conventional Commits, revisão e padrões. Veja [roadmap](docs/ROADMAP.md), [segurança](SECURITY.md) e [origem da implementação](docs/PROVENANCE.md). A licença MIT está **sugerida para decisão da equipe**, conforme [LICENSE](LICENSE); não foi aplicada retroativamente ao código herdado.
+Serviço atual: `conecta-api`
+
+Service ID: `srv-dalbqo2jnfac73915ktg`
+
+URL: https://conecta-api-2x27.onrender.com
+
+Configure `ALLOWED_ORIGINS` com os domínios publicados do App e do Analytics. Para demonstração gravável, use `DEMO_READ_ONLY=false`; para apresentação pública sem escrita, use `DEMO_READ_ONLY=true`.
+
+Outbound IPs compartilhados informados pelo Render: `74.220.50.0/24` e `74.220.58.0/24`. Eles não são exclusivos do serviço. Se algum serviço externo exigir allowlist única, será necessário Dedicated IP no Render.
+
+## Integração dos três repositórios
+
+Com `conecta-app`, `conecta-api` e `conecta-analytics` em pastas irmãs:
+
+```sh
+npm run check:integration
+```
+
+O teste sobe a API em porta temporária e valida coleta, contexto, sinais, auditoria, campanhas, CSV e retirada da coleta usando os clientes dos outros repositórios.
+
+## Limites
+
+SQLite e processamento em memória servem ao protótipo. Antes de uso real, será preciso definir banco gerenciado, retenção, backup, observabilidade, autenticação corporativa, política LGPD, segregação por organização e operação de campanhas.
