@@ -1,7 +1,10 @@
 import { openDatabase } from './db/database.ts';
 import { createApp } from './app.ts';
 import { ensureAdminUser } from './services/auth.ts';
+import { seed } from '../scripts/seed.ts';
 const db = openDatabase(process.env.DB_PATH);
+// Em ambientes demonstrativos, popula a base apenas quando ela estiver vazia.
+seed(db);
 ensureAdminUser(db, process.env.DEMO_ADMIN_EMAIL, process.env.DEMO_ADMIN_PASSWORD);
 const app = createApp(db, {
   readOnly: process.env.DEMO_READ_ONLY !== 'false',

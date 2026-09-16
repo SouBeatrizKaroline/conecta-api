@@ -32,7 +32,7 @@ Saúde local: http://127.0.0.1:3000/health
 
 Swagger/OpenAPI: http://127.0.0.1:3000/api-docs
 
-O `setup` cria `.env` com `ADMIN_TOKEN`, `DEMO_ADMIN_EMAIL` e `DEMO_ADMIN_PASSWORD`. O `seed` cria uma base fictícia com 37 eventos, 6 perfis e 9 sessões quando o banco ainda está vazio.
+O `setup` cria `.env` com `ADMIN_TOKEN`, `DEMO_ADMIN_EMAIL` e `DEMO_ADMIN_PASSWORD`. O `seed` cria uma base fictícia com 37 eventos, 6 perfis e 9 sessões quando o banco ainda está vazio. O servidor também executa essa mesma proteção no boot, para que a demonstração publicada não comece sem dados.
 
 ## Respostas padronizadas
 
