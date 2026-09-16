@@ -3,7 +3,7 @@
 ## Verificação da integração API e Analytics em 15/09/2026
 
 - API: 12 testes aprovados; Analytics: 1 teste aprovado; sintaxe verificada nos dois.
-- `node scripts/check-integration.js`: aprovado usando os clientes reais dos repositórios irmãos. Coleta, contexto, sinais v2, mudança de estado, auditoria, CSV e retirada da coleta.
+- `npm run check:integration`: aprovado usando os clientes reais dos repositórios irmãos. Coleta, contexto, sinais v2, mudança de estado, auditoria, CSV e retirada da coleta.
 - Navegador local: conexão administrativa; 37 eventos, seis perfis e nove sessões; ação planejada com auditoria.
 - App/demo original: iniciou sessão e concluiu jornada; a resposta nextStep foi exibida. Arquivos do App não foram alterados.
 - Analytics: recorte até 12/09 mostrou sinal histórico da empresa 02 desativado após conclusão em 15/09. Estado planejado permaneceu visível e o seletor ficou desabilitado.
@@ -50,6 +50,6 @@ Execute npm ci, npm run check, npm test e npm run format:check para repetir as v
 
 Os cinco arquivos de código do frontend de origem foram comparados com o conteúdo Git da revisão 65a0705c7e9ae1a98ce9396b204cef268b0997eb. O manifesto de hashes está no conecta-app em docs/source-baseline.json. A documentação e os novos módulos ficam separados.
 
-Não foram verificados login real, integração Petronect, envio de mensagens, dados reais, carga produtiva, migração MariaDB ou hospedagem online porque não estão implementados. As telas originais permanecem em desenvolvimento; a evidência ponta a ponta usa demo.html.
+Não foram verificados integração Petronect, envio de mensagens, dados reais, carga produtiva ou migração MariaDB porque não estão implementados. A evidência ponta a ponta cobre o módulo demonstrativo e as telas principais do App com rastreamento consentido.
 
 Os checks do GitHub Actions são publicados junto com os repositórios; consulte a aba Actions para o resultado remoto de cada commit.

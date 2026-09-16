@@ -1,9 +1,11 @@
-import { openDatabase } from './db/database.js';
-import { createApp } from './app.js';
+import { openDatabase } from './db/database.ts';
+import { createApp } from './app.ts';
+import { ensureAdminUser } from './services/auth.ts';
 const db = openDatabase(process.env.DB_PATH);
+ensureAdminUser(db, process.env.DEMO_ADMIN_EMAIL, process.env.DEMO_ADMIN_PASSWORD);
 const app = createApp(db, {
   readOnly: process.env.DEMO_READ_ONLY !== 'false',
-  adminToken: process.env.ADMIN_TOKEN,
+  adminToken: process.env.ADMIN_TOKEN ?? '',
   origins: (
     process.env.ALLOWED_ORIGINS ??
     'http://localhost:8080,http://127.0.0.1:8080,http://localhost:8081,http://127.0.0.1:8081'
