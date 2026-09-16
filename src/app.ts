@@ -19,7 +19,6 @@ import { csv, journeys, selectEvents, signals, summary } from './services/analyt
 import { sessionContext } from './services/context.ts';
 import { historicalSignals } from './services/insights.ts';
 import { createUser, login, logout, resolvePrincipal, tokenHash } from './services/auth.ts';
-import { verificarToken } from './services/authService';
 import { campaignStatusCounts, createCampaign, getCampaign, listCampaigns, updateCampaign } from './services/campaigns.ts';
 
 interface Logger {
@@ -135,23 +134,6 @@ export function createApp(db: DatabaseSync, options: AppOptions = {}) {
       ? next()
       : next(new ApiError(403, 'FORBIDDEN', 'Ação permitida somente para administradoras.'));
 
-  const verifyJWT = (req: Request, res: Response, next: NextFunction) => {
-  const token = bearer(req); // Usa a sua função bearer() existente na linha 36
-  
-  if (!token) {
-    return next(new ApiError(401, 'UNAUTHORIZED', 'Token não fornecido.'));
-  }
-
-  try {
-    // Tenta decodificar o token
-    const decoded = verificarToken(token);
-    // Salva os dados do usuário na requisição para as próximas rotas usarem
-    req.user = decoded; 
-    return next();
-  } catch (error) {
-    return next(new ApiError(401, 'INVALID_TOKEN', 'Token inválido ou expirado.'));
-  }
-};
   const authenticatedUser = (req: Request, _res: Response, next: NextFunction) => {
     const principal = resolvePrincipal(db, bearer(req), adminToken);
     if (!principal || principal.source !== 'user-session')
@@ -208,27 +190,21 @@ export function createApp(db: DatabaseSync, options: AppOptions = {}) {
     }),
   );
 
-  app.post('/api/v1/auth/login', writable, async (req, res, next) => {
-  try {
-    // Pega email e senha do corpo da requisição
-    const { email, password } = req.body;
-    
-    // Chama o login do novo authService
-    const dadosAutenticacao = await login(email, password);
-    
-    return ok(res, dadosAutenticacao, 'Autenticação realizada com sucesso.');
-  } catch (error: any) {
-    return res.status(401).json({ success: false, message: error.message || 'Credenciais inválidas.' });
-  }
-});
+  app.post('/api/v1/auth/login', writable, (req, res) => {
+    const input = validateLogin(req.body);
+    const result = login(db, input.email, input.password);
+    if (!result) throw new ApiError(401, 'INVALID_CREDENTIALS', 'Credenciais inválidas.');
+    return ok(res, result, 'Autenticação realizada com sucesso.');
+  });
 
-  app.get('/api/v1/auth/me', verifyJWT, (req, res) => {
-    const user = db.prepare('SELECT id,name,email,role,created_at AS createdAt FROM users WHERE id=?').get((req as any).user.id);
+  app.get('/api/v1/auth/me', authenticatedUser, (req, res) => {
+    const user = db.prepare('SELECT id,name,email,role,created_at AS createdAt FROM users WHERE id=?').get(req.principal!.id);
     return ok(res, user);
   });
 
-  app.post('/api/v1/auth/logout', writable, verifyJWT, (req, res) => {
-     return ok(res, { loggedOut: true }, 'Sessão encerrada.');
+  app.post('/api/v1/auth/logout', writable, authenticatedUser, (req, res) => {
+    logout(db, bearer(req));
+    return ok(res, { loggedOut: true }, 'Sessão encerrada.');
   });
 
   app.post('/api/v1/sessions', capture, (req, res) => {

@@ -1,6 +1,6 @@
 # Arquitetura do Conecta
 
-Evolução implementada: [contexto explicável por sessão e sinais históricos v2](EVOLUTION.md), em `src/services/context.js` e `src/services/insights.js`. O mesmo documento detalha a proposta futura de adaptação serverless, ainda não implantada.
+Evolução implementada: [contexto explicável por sessão e sinais históricos v2](EVOLUTION.md), em `src/services/context.ts` e `src/services/insights.ts`. O mesmo documento detalha a proposta futura de adaptação serverless, ainda não implantada.
 
 ## Decisão estrutural
 
@@ -50,7 +50,7 @@ sequenceDiagram
 
 - **src/app.ts:** rotas, fronteiras HTTP, autorização e limites.
 - **src/validation.ts:** contrato de entrada, enums e filtros.
-- **src/services/analytics.js:** métricas, jornadas, sinais e CSV.
+- **src/services/analytics.ts:** métricas, jornadas, sinais e CSV.
 - **src/db/database.ts / schema.sql:** criação do banco e catálogo fictício.
 - **scripts/:** configuração local e carga simulada idempotente.
 - **test/:** contratos, segurança, persistência e fluxo funcional.
@@ -61,7 +61,7 @@ Separar controllers/repositories adicionais é apropriado quando o domínio cres
 
 **Local de desenvolvimento:** API em 127.0.0.1, token administrativo gerado localmente, escrita habilitada, catálogo exclusivamente fictício. Portas 3000, 8080 e 8081.
 
-**Demonstração pública prevista:** API com DEMO_READ_ONLY=true, base fictícia dedicada, TLS no provedor e origens explícitas. A jornada não pode gravar nesse modo e deve ser apresentada como leitura. Publicar repositórios no GitHub não publica automaticamente os sites ou a API.
+**Demonstração pública:** API com DEMO_READ_ONLY=true, base fictícia dedicada, TLS no provedor e origens explícitas. A jornada pode gravar somente sessões/eventos após consentimento; gestão administrativa e campanhas permanecem protegidas. Publicar repositórios no GitHub não substitui a configuração do serviço no Render.
 
 **Produção futura:** exige decisão sobre identificação, base legal, retenção, segregação por organização, autenticação de usuários/operadores, monitoramento e banco adequado à carga. Nada disso deve ser inferido a partir do login visual do frontend herdado.
 

@@ -17,7 +17,7 @@ Base local: http://127.0.0.1:3000. JSON UTF-8; horários em UTC. [OpenAPI 3.1](o
 | ------ | -------------------------------- | -------------------------------------------------- | -------------------------- |
 | GET    | /health                          | status, version, simulated, readOnly               | Público                    |
 | GET    | /api/v1/catalog                  | Perfis fictícios, interesses e modo                | Público                    |
-| POST   | /api/v1/sessions                 | id, token, expiresIn                               | Local, adesão explícita    |
+| POST   | /api/v1/sessions                 | id, token, expiresIn                               | Público, adesão explícita  |
 | GET    | /api/v1/sessions/:id/context     | profileId, analyticsConsent, nextStep              | Sessão                     |
 | PATCH  | /api/v1/sessions/:id/preferences | Altera coleta; ao retirar remove eventos da sessão | Sessão + escrita           |
 | POST   | /api/v1/sessions/:id/events      | accepted, duplicate, id                            | Sessão + coleta habilitada |
@@ -72,4 +72,4 @@ PATCH /admin/signals/demo-02:inactive-7d recebe {"status":"planned"}. O sinal de
 }
 ```
 
-400: contrato/data inválida; 401: token/sessão inválido; 403: origem, coleta ou escrita proibida; 404: recurso ausente; 409: evento em conflito; 413: corpo maior que 16KB; 429: limite de 300 requisições/IP/minuto; 500: erro interno sem detalhes do banco. CORS permite apenas as origens configuradas. HTTP sem TLS é apenas para loopback local.
+400: contrato/data inválida; 401: token/sessão inválido; 403: origem, consentimento ou gestão protegida; 404: recurso ausente; 409: evento em conflito; 413: corpo maior que 16KB; 429: limite de 300 requisições/IP/minuto; 500: erro interno sem detalhes do banco. CORS permite apenas as origens configuradas. HTTP sem TLS é apenas para loopback local.

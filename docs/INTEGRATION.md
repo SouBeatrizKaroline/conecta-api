@@ -44,7 +44,7 @@ npm test
 npm start
 ```
 
-setup cria .env com token aleatório e escrita local, sem sobrescrever arquivo existente. Abra o .env local para copiar ADMIN_TOKEN ao painel. O token não é exibido em logs nem enviado ao GitHub. seed insere 37 eventos de seis empresas fictícias apenas quando a base não tem eventos. A idade dos eventos é relativa ao dia de execução, para demonstrar sinais.
+setup cria .env com token aleatório e escrita local, sem sobrescrever arquivo existente. Abra o .env local para copiar ADMIN_TOKEN ao painel. O token não é exibido em logs nem enviado ao GitHub. O seed completa 37 eventos de seis empresas fictícias quando a base ainda não atingiu esse recorte. A idade dos eventos é relativa ao dia de execução, para demonstrar sinais.
 
 ### Terminal 2: frontend do usuário
 
@@ -78,7 +78,7 @@ Abra http://127.0.0.1:8081, informe a API e `ADMIN_TOKEN` ou `DEMO_ADMIN_EMAIL`/
 
 ## Modo de leitura para apresentação pública
 
-No backend, use DEMO_READ_ONLY=true com uma base exclusivamente fictícia. GET administrativos passam a dispensar token e todas as gravações ficam bloqueadas. A API deve estar atrás de HTTPS; configure HOST/PORT e ALLOWED_ORIGINS no provedor. Não inclua .env, banco ou tokens em hospedagem estática. A publicação de aplicação/hospedagem é uma etapa separada da publicação dos repositórios.
+No backend, use DEMO_READ_ONLY=true com uma base exclusivamente fictícia. GET administrativos passam a dispensar token; a captura consentida de sessões e eventos continua habilitada para a jornada do App, enquanto gestão e campanhas exigem credencial. A API deve estar atrás de HTTPS; configure HOST/PORT e ALLOWED_ORIGINS no provedor. Não inclua .env, banco ou tokens em hospedagem estática. A publicação de aplicação/hospedagem é uma etapa separada da publicação dos repositórios.
 
 No Render, os outbound IPs compartilhados informados são `74.220.50.0/24` e `74.220.58.0/24`. Eles não são exclusivos. Se alguma integração externa exigir allowlist única, contrate Dedicated IP.
 
@@ -88,7 +88,7 @@ No Render, os outbound IPs compartilhados informados são `74.220.50.0/24` e `74
 | --------------------------------------- | ----------------------------------------------------------------------------------------------- |
 | Dados indisponíveis / Failed to fetch   | API iniciada? Endereço correto? Origem e porta incluídas em ALLOWED_ORIGINS?                    |
 | 401 no Analytics                        | Use o ADMIN_TOKEN do .env da API em execução; não o token de sessão                             |
-| 403 ao iniciar jornada                  | DEMO_READ_ONLY deve ser false na demonstração local de escrita                                  |
+| 403 ao iniciar jornada                  | Verifique consentimento e origem; a captura consentida funciona mesmo com DEMO_READ_ONLY=true  |
 | Cadastro não aparece no painel          | O painel mostra eventos categóricos; dados digitados em formulário não são enviados à API        |
 | Nenhum evento no painel                 | Execute seed numa base vazia, ajuste filtros ou registre a jornada demonstrativa                |
 | Contagens não mudam                     | Clique em Atualizar análise; o painel não faz atualização em tempo real                         |

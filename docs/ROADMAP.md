@@ -9,7 +9,7 @@
 - [x] CSV filtrado e gestão de estado de ações com auditoria.
 - [x] Testes automatizados de API, segurança e persistência.
 
-## Evolução implementada nesta branch
+## Evolução implementada na main
 
 - [x] Contexto explicável por sessão, com prioridade de regras.
 - [x] Consulta de sinais v2 com referência histórica e atividade atual separadas.

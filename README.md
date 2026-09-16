@@ -6,6 +6,10 @@ API publicada no Render: https://conecta-api-2x27.onrender.com
 
 > Protótipo funcional com dados simulados. Não há integração com o Portal Petronect real, CRM, envio de mensagens ou dados pessoais reais.
 
+## Estado do repositório
+
+`main` é a branch de referência e contém a integração consolidada. `develop` acompanha a `main` para validações antes de novas mudanças. Branches de trabalho devem ser temporárias e removidas após o merge.
+
 ## Arquitetura
 
 ```mermaid
@@ -32,7 +36,7 @@ Saúde local: http://127.0.0.1:3000/health
 
 Swagger/OpenAPI: http://127.0.0.1:3000/api-docs
 
-O `setup` cria `.env` com `ADMIN_TOKEN`, `DEMO_ADMIN_EMAIL` e `DEMO_ADMIN_PASSWORD`. O `seed` cria uma base fictícia com 37 eventos, 6 perfis e 9 sessões quando o banco ainda está vazio. O servidor também executa essa mesma proteção no boot, para que a demonstração publicada não comece sem dados.
+O `setup` cria `.env` com `ADMIN_TOKEN`, `DEMO_ADMIN_EMAIL` e `DEMO_ADMIN_PASSWORD`. O `seed` cria uma base fictícia com 37 eventos, 6 perfis e 9 sessões quando a base ainda não atingiu esse recorte. O servidor executa a mesma proteção no boot, sem sobrescrever uma base já completa.
 
 ## Respostas padronizadas
 
@@ -78,7 +82,7 @@ Campos legados importantes também permanecem no topo da resposta para manter co
 | `HOST` | Host HTTP. Padrão local: `127.0.0.1` |
 | `PORT` | Porta HTTP. Padrão: `3000` |
 | `DB_PATH` | Caminho do SQLite |
-| `DEMO_READ_ONLY` | `true` bloqueia mutações e libera GET administrativos públicos |
+| `DEMO_READ_ONLY` | `true` libera leitura administrativa e captura de sessões/eventos consentidos; bloqueia gestão e campanhas |
 | `ADMIN_TOKEN` | Token administrativo com pelo menos 32 caracteres |
 | `DEMO_ADMIN_EMAIL` | E-mail do login administrativo demo |
 | `DEMO_ADMIN_PASSWORD` | Senha do login administrativo demo |
@@ -92,7 +96,7 @@ Service ID: `srv-dalbqo2jnfac73915ktg`
 
 URL: https://conecta-api-2x27.onrender.com
 
-Configure `ALLOWED_ORIGINS` com os domínios publicados do App e do Analytics. Para demonstração gravável, use `DEMO_READ_ONLY=false`; para apresentação pública sem escrita, use `DEMO_READ_ONLY=true`.
+Configure `ALLOWED_ORIGINS` com os domínios publicados do App e do Analytics. Com `DEMO_READ_ONLY=true`, o App ainda pode registrar sessões e eventos após consentimento, enquanto alterações administrativas permanecem bloqueadas.
 
 Outbound IPs compartilhados informados pelo Render: `74.220.50.0/24` e `74.220.58.0/24`. Eles não são exclusivos do serviço. Se algum serviço externo exigir allowlist única, será necessário Dedicated IP no Render.
 
@@ -109,3 +113,7 @@ O teste sobe a API em porta temporária e valida coleta, contexto, sinais, audit
 ## Limites
 
 SQLite e processamento em memória servem ao protótipo. Antes de uso real, será preciso definir banco gerenciado, retenção, backup, observabilidade, autenticação corporativa, política LGPD, segregação por organização e operação de campanhas.
+
+## Branches e contribuição
+
+Use `develop` para integração e validação. Após os checks (`npm run check`, `npm test` e `npm run check:integration`), faça o merge para `main`, que é a branch usada pelo Render. Não faça commits de credenciais, `.env`, banco local ou tokens.

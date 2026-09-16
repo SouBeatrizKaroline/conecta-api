@@ -10,7 +10,7 @@
 - Filtro Energia e período histórico: quatro eventos; período futuro: estado vazio com zero eventos.
 - Exportação acionada após editar filtros sem atualizar: utiliza a consulta da análise exibida.
 - Inspeção visual na largura disponível do navegador, cerca de 600px. O controle de viewport não confirmou 390px; não registramos validação móvel a 390px nesta revisão.
-- Modo público sem token: leitura disponível e seletores de ações desabilitados. API sem capabilities: aviso de atualização e análise anterior ocultada.
+- Modo público sem token: leitura disponível, captura consentida de sessões/eventos habilitada e seletores de gestão desabilitados. API sem capabilities: aviso de atualização e análise anterior ocultada.
 - App verificado no commit `6d2839be14f7cf1879c46e275256a57b3754987c`, com árvore de trabalho limpa.
 - Sem implantação em nuvem, dados reais ou teste de carga. Os registros abaixo pertencem às revisões anteriores.
 
