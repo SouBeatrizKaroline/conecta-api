@@ -121,46 +121,31 @@ export function createApp(db: DatabaseSync, options: AppOptions = {}) {
   // A coleta consentida continua disponível no modo público para o App gerar a jornada.
   const capture = (_req: Request, _res: Response, next: NextFunction) => next();
 
-  const administrative = (req: Request, _res: Response, next: NextFunction) => {
-    if (readOnly && req.method === 'GET') return next();
-    const principal = resolvePrincipal(db, bearer(req), adminToken);
-    if (!principal)
-      return next(new ApiError(401, 'UNAUTHORIZED', 'Credencial administrativa inválida.'));
-    req.principal = principal;
-    return next();
-  };
-
-  const adminOnly = (req: Request, _res: Response, next: NextFunction) =>
-    req.principal?.role === 'admin'
-      ? next()
-      : next(new ApiError(403, 'FORBIDDEN', 'Ação permitida somente para administradoras.'));
-
   const verifyJWT = (req: Request, res: Response, next: NextFunction) => {
-  const token = bearer(req); // Usa a sua função bearer() existente na linha 36
+  const token = bearer(req);
   
   if (!token) {
     return next(new ApiError(401, 'UNAUTHORIZED', 'Token não fornecido.'));
   }
 
   try {
-    // Tenta decodificar o token
     const decoded = verificarToken(token);
-    // Salva os dados do usuário na requisição para as próximas rotas usarem
-    req.user = decoded; 
+    (req as any).user = decoded; 
     return next();
   } catch (error) {
     return next(new ApiError(401, 'INVALID_TOKEN', 'Token inválido ou expirado.'));
   }
 };
-  const authenticatedUser = (req: Request, _res: Response, next: NextFunction) => {
-    const principal = resolvePrincipal(db, bearer(req), adminToken);
-    if (!principal || principal.source !== 'user-session')
-      return next(new ApiError(401, 'UNAUTHORIZED', 'Sessão de usuária inválida ou expirada.'));
-    req.principal = principal;
-    return next();
-  };
 
-  const session = (req: Request<{ id: string }>, _res: Response, next: NextFunction) => {
+const adminOnly = (req: Request, _res: Response, next: NextFunction) => {
+  const user = (req as any).user;
+  return user && user.admin 
+    ? next() 
+    : next(new ApiError(403, 'FORBIDDEN', 'Ação permitida somente para administradoras.'));
+};
+ 
+
+   const session = (req: Request<{ id: string }>, _res: Response, next: NextFunction) => {
     const row = db.prepare('SELECT * FROM sessions WHERE id=?').get(req.params.id) as
       | SessionRow
       | undefined;
